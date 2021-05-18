@@ -1,0 +1,39 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v5.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v5.0": {
+      "PDM_SW_FB_API_V2/1.0.0": {
+        "dependencies": {
+          "EPDM.Interop.epdm": "5.23.0.0"
+        },
+        "runtime": {
+          "PDM_SW_FB_API_V2.dll": {}
+        }
+      },
+      "EPDM.Interop.epdm/5.23.0.0": {
+        "runtime": {
+          "EPDM.Interop.epdm.dll": {
+            "assemblyVersion": "5.23.0.0",
+            "fileVersion": "28.4.0.52"
+          }
+        }
+      }
+    }
+  },
+  "libraries": {
+    "PDM_SW_FB_API_V2/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "EPDM.Interop.epdm/5.23.0.0": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}
