@@ -1,14 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using EPDM.Interop.epdm;
+using OfficeOpenXml;
 
 namespace PDM_SW_FB_API_V2
 {
     class Program
     {
-        static void Main()
+        public static void Main()
         {
+            MainAsync().GetAwaiter().GetResult();
+        }
+
+        private static async Task MainAsync()
+        {
+            ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+
             #region Set up variables
 
             //For region 1
@@ -50,7 +60,9 @@ namespace PDM_SW_FB_API_V2
                 }
                 catch
                 {
-                    Console.WriteLine("You need to be logged into the PDM, genius. \n\n");
+                    Console.WriteLine("You need to be logged into the PDM, genius.");
+                    Console.ReadKey();
+                    Console.Clear();
                 }
             } while (loggedIn == false);
 
@@ -185,7 +197,76 @@ namespace PDM_SW_FB_API_V2
 
             #endregion
 
-            Console.ReadKey();
+            #region Create Excel Document
+
+            ExcelCreator excelDoc = new ExcelCreator(prodNum, GetBomPath(cncPath), materialItems, purchasedItems);
+            FileInfo file = excelDoc.CreateExcelFile(excelDoc.Path, prodNum);
+
+            try
+            {
+                await excelDoc.SaveExcelFile(materialItems, purchasedItems, file);
+            }
+            catch
+            {
+                Console.WriteLine("\n\nSomething bad happened when trying to create the excel doc.");
+            }
+
+            #endregion
+
+            Console.WriteLine("\n\nDo you want to open the excel doc now?");
+            Console.WriteLine("Press 1: Yes");
+            Console.WriteLine("Press 2: No");
+
+            switch (Console.ReadKey().Key)
+            {
+                case ConsoleKey.NumPad1:
+                    excelDoc.OpenExcelDoc(file);
+                    break;
+                case ConsoleKey.D1:
+                    excelDoc.OpenExcelDoc(file);
+                    break;
+                case ConsoleKey.NumPad2:
+                    Respond();
+                    break;
+                case ConsoleKey.D2:
+                    Respond();
+                    break;
+                default:
+                    Console.WriteLine("\nThat wasn't one of the options. Open it yourself if you want to.");
+                    break;
+            }
+        }
+
+        private static void Respond()
+        {
+            Random rand = new Random();
+            int num = rand.Next(0, 5);
+
+            switch (num)
+            {
+                case 1:
+                    Console.WriteLine("\nWell, good riddance then, ya donkey.");
+                    break;
+                case 2:
+                    Console.WriteLine("\nOk, maybe have one of your dang cronies do it.");
+                    break;
+                case 3:
+                    Console.WriteLine("\nWhat did you even do this for, then?");
+                    break;
+                case 4:
+                    Console.WriteLine("\nOpen it yourself, then. It's saved in there.");
+                    break;
+                default:
+                    Console.WriteLine("\nOk, then.. What good am I, anyway?");
+                    break;
+            }
+        }
+
+        private static string GetBomPath(string cncPath)
+        {
+            string cutPattern = @"2-CNC";
+            string excelPath = Regex.Replace(cncPath, cutPattern, "3-Build Sheet & BOM");
+            return excelPath;
         }
 
         private static string GetMaterialPartNo(string temp)
